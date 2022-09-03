@@ -41,8 +41,30 @@ struct Project {
     //todo: 新增结构
 }
 
-struct Donation {
+// 表示Donation的Parameters
+struct DonationParameters {
      uint256 donationId; //捐赠的项目编号
      uint256 projectId; //捐赠项目的Id
      uint256 amount; //捐赠额度
 }
+
+// censor 申请的时候需要提供项目方颁发的签名的信息,会使用EIP712去来校验
+/** 签名的结构体格式:
+{name:"",
+ version:"",
+ chainId:"",
+ verifyingContract:"",
+ Censor:{
+    authorization:"初始化的地址",
+    licenceNum:"颁发的licence号码"
+ }
+}
+ */
+struct CensorParameters {
+     address censorAddress;
+     uint256 censorlicenseNum;
+     bytes32 censorHash;//由项目方颁发的签名
+     bytes signature; //生成的数字签名用户校验
+
+}
+
