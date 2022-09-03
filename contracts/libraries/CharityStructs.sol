@@ -35,17 +35,22 @@ struct Project {
     address agentAddress;//打款的代理地址
     ProjectState state; //项目的状态
     uint256[] censors; //参与项目审核的节点
-    uint256 censorsCursor;//项目审核节点的游标
+    uint256 totalCensors;//有多少censor节点参与项目
     uint256 deadline; //项目的deadline
     uint numOfDonates;//项目有几笔捐赠构成
     //todo: 新增结构
 }
 
 // 表示Donation的Parameters
-struct DonationParameters {
+struct Donation {
      uint256 donationId; //捐赠的项目编号
      uint256 projectId; //捐赠项目的Id
      uint256 amount; //捐赠额度
+}
+
+struct DonationParameters{
+     uint256 projectId; //捐赠项目的Id
+     uint256 amount; //捐赠额度 
 }
 
 // censor 申请的时候需要提供项目方颁发的签名的信息,会使用EIP712去来校验
@@ -79,6 +84,7 @@ struct CensorParameters {
     supervisor:"address"
     fundingTarget:"募集的目标"
     deadlineTime: "募集截止日期"
+    recipient:"项目受益人"
  }
 
 }
@@ -88,6 +94,7 @@ struct ProjectParameters{
      address supervisorAddress;
      uint256 fundingTarget;
      uint256 deadlineTime; 
-     
+     address recipient;
+     bytes signature;
 }
 

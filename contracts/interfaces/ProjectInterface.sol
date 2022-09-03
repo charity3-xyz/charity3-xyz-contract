@@ -23,8 +23,16 @@ interface ProjectInterface {
  1. censor 才有验证的权利，
  2. 验证后，censor就加入了项目censor的数组中了
  3. 一个censor 能否在确认期修改自己的validation结果？
- 4. 一个censor 是否能够退出,censor这个项目
+ 4. 一个censor 是否能够退出,censor这个项目?
  */
  function validateProject(uint256 projectId, bool validation) external;
+
+
+// 只有supervisor 打款给agent
+function transferToAgent(uint256 projectId) 
+ external
+  returns (bool success);
+
+
 
 }
