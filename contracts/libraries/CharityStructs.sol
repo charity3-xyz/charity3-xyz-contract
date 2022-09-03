@@ -66,13 +66,14 @@ struct DonationParameters{
 }
  */
 struct CensorParameters {
-     address censorAddress;
-     uint256 censorlicenseNum;
+     uint256 censorlicenseNum;//censor的
      bytes signature; //生成的数字签名用户校验
 
 }
 
 // 使用签名，需要使用项目指定的supervisor
+// censor 可以转账，转到项目方
+// supervisor 不转账，censor都被Lock可以取消项目
 /** 签名的格式 
 {
  name:"",
@@ -81,10 +82,11 @@ struct CensorParameters {
  verifyingContract:"",
  projectMeta:{
     projectNum:"项目的流水号"
-    supervisor:"address"
+    supervisor:"address"   
     fundingTarget:"募集的目标"
     deadlineTime: "募集截止日期"
-    recipient:"项目受益人"
+    recipient:"项目受益人",
+    "otherCensors":[xxx,xxx,xxxx],
  }
 
 }
@@ -95,6 +97,7 @@ struct ProjectParameters{
      uint256 fundingTarget;
      uint256 deadlineTime; 
      address recipient;
+     address[] otherCensors;
      bytes signature;
 }
 

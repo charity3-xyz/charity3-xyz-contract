@@ -27,9 +27,15 @@ contract CharityBase  {
       _CENSOR_ITEM_TYPEHASH,
       _PROJECT_ITEM_TYPEHASH,
 
-    )
+    ) = _deriveTypehashes();
   }
 
+
+
+ function _nameString() 
+ internal pure virtual returns (string memory){
+    return "Charity3XYZ";
+ }
 
   function _deriveTypehashes() 
   internal
@@ -41,7 +47,11 @@ contract CharityBase  {
       bytes32 censorItemTypehash,
       bytes32 projectItemTypehash
    ){
-    
+     nameHash = keccak256(bytes(_nameString()));
+     versionHash = keccak256(bytes("1.1"));
+     bytes memory censorItemString = abi.encodePacked(
+        ""
+    );
    }
 
 }

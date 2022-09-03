@@ -11,6 +11,8 @@ interface ProjectInterface {
 
 /*
  申领，将项目上链
+ 认证动作链下处理!!!!
+ 上链直接捐赠!!!!
  1. msg_sender 是不是有效censor
  2. 如果是有效censor 验证签名
  3. 签名验证成功创建project
@@ -28,7 +30,7 @@ interface ProjectInterface {
  function validateProject(uint256 projectId, bool validation) external;
 
 
-// 只有supervisor 打款给agent
+// 只有censor 打款给agent
 function transferToAgent(uint256 projectId) 
  external
   returns (bool success);
