@@ -54,7 +54,7 @@ struct DonationParameters {
  version:"",
  chainId:"",
  verifyingContract:"",
- Censor:{
+ censor:{
     authorization:"初始化的地址",
     licenceNum:"颁发的licence号码"
  }
@@ -63,8 +63,31 @@ struct DonationParameters {
 struct CensorParameters {
      address censorAddress;
      uint256 censorlicenseNum;
-     bytes32 censorHash;//由项目方颁发的签名
      bytes signature; //生成的数字签名用户校验
 
+}
+
+// 使用签名，需要使用项目指定的supervisor
+/** 签名的格式 
+{
+ name:"",
+ version:"",
+ chainId:"",
+ verifyingContract:"",
+ projectMeta:{
+    projectNum:"项目的流水号"
+    supervisor:"address"
+    fundingTarget:"募集的目标"
+    deadlineTime: "募集截止日期"
+ }
+
+}
+*/
+struct ProjectParameters{
+     uint256 projectNum;
+     address supervisorAddress;
+     uint256 fundingTarget;
+     uint256 deadlineTime; 
+     
 }
 

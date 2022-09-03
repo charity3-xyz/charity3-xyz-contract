@@ -33,4 +33,7 @@ interface CensorInterface {
   function withdrawDeposit(uint256 amount) external 
   returns (bool success);
 
+
+ function  addDeposit(uint256 amount) external;
+
 }
