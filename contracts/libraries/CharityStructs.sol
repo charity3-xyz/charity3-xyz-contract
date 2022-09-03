@@ -18,12 +18,9 @@ struct Censor {
 
 //仲裁的请求，对一个项目发起仲裁，中心化服务器会进行签名，然后仲裁者用此次签名去验证
 struct ArbitrationReq {
-   uint256 arbitratorId; // 仲裁的Id,知道项目由谁进行仲裁的
-   address validateAddress; //签发的地址，验证的时候判断sender的地址是否是validateAddress
+   uint256 arbitratorId; //todo:是否需要 仲裁的Id,知道项目由谁进行仲裁的
    uint256 projectId; // 仲裁哪个项目的Id
    uint256 deadlineTime;//仲裁截止时间
-   bytes32 requestHash;
-   bytes  signature;
 }
 
 struct Project {
@@ -99,5 +96,25 @@ struct ProjectParameters{
      address recipient;
      address[] otherCensors;
      bytes signature;
+}
+
+
+//  申请的时候需要提供项目方颁发的签名的信息,会使用EIP712去来校验
+/** 签名的结构体格式:
+{name:"",
+ version:"",
+ chainId:"",
+ verifyingContract:"",
+ committee:{
+    authorization:"初始化的地址",
+    licenceNum:"颁发的licence号码",
+    deadline:"有效期"
+ }
+}
+ */
+
+struct CommitteeParameters {
+    uint256 licenseNum;//cmmitte licenseNum;
+     bytes signature; //生成的数字签名用户校验
 }
 

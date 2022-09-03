@@ -27,3 +27,12 @@ enum CensorState {
     //2: 审查节点押金不足，无法再申领项目，有项目没有结项，不支持取出押金
     INVALIDATE, 
 }
+
+enum CommitteeState {
+    //0:有效
+     VALIDATE,
+    //1:锁定 
+     LOCKED,
+     //2:超时
+     OVERDUE,
+}
