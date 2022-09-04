@@ -29,8 +29,27 @@ contract CharityBase  {
       _PROJECT_ITEM_TYPEHASH,
       _COMMITTEE_ITEM_TYPEHASH
     ) = _deriveTypehashes();
+    _CHAIN_ID = block.chainid;
+    _DOMAIN_SEPARATOR = _deriveDomainSeparator();
+
+
   }
 
+
+
+
+
+function _deriveDomainSeparator() internal view returns (bytes32) {
+        return keccak256(
+            abi.encode(
+                _EIP_712_DOMAIN_TYPEHASH,
+                _NAME_HASH,
+                _VERSION_HASH,
+                _CHAIN_ID,
+                address(this)
+            )
+        );
+    }
 
 
  function _nameString() 
@@ -62,8 +81,9 @@ contract CharityBase  {
         "address projectNum,",
         "address supervisorAddress",
         "uint256 fundingTarget",
-        "uint256 deadlineTime",
+        "uint256 deadline",
         "address recipient",
+        "uint256 depositAmount",
         "address[] otherCensors",
         ")"
     );
@@ -72,6 +92,7 @@ contract CharityBase  {
         "CommitteeItem(",
         "address recipient,",
         "uint256 licenseNum,",
+        "uint256 deadline",
         ")" 
     );
      eip712DomainTypehash = keccak256(
@@ -87,7 +108,6 @@ contract CharityBase  {
       censorItemTypehash = keccak256(censorItemString);
       projectItemTypehash = keccak256(projectItemString);
       committeItemTypehash = keccak256(commitItemString);
-
 
    }
 

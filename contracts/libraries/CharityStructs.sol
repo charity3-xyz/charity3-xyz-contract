@@ -92,8 +92,9 @@ struct ProjectParameters{
      uint256 projectNum;
      address supervisorAddress;
      uint256 fundingTarget;
-     uint256 deadlineTime; 
+     uint256 deadline; 
      address recipient;
+     uint256 depositAmount; //项目质押金额
      address[] otherCensors;
      bytes signature;
 }
@@ -126,5 +127,8 @@ struct CensorItem {
 struct CommitteeItem{
     address recipient;
     uint256 licenseNum;  
+    uint256 deadline;
 }
+
+
 
