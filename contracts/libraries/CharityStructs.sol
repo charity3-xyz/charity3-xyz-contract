@@ -57,7 +57,7 @@ struct DonationParameters{
  chainId:"",
  verifyingContract:"",
  censor:{
-    authorization:"初始化的地址",
+    recipient:"初始化的地址",
     licenceNum:"颁发的licence号码"
  }
 }
@@ -106,7 +106,7 @@ struct ProjectParameters{
  chainId:"",
  verifyingContract:"",
  committee:{
-    authorization:"初始化的地址",
+    recipient:"初始化的地址",
     licenceNum:"颁发的licence号码",
     deadline:"有效期"
  }
@@ -116,5 +116,15 @@ struct ProjectParameters{
 struct CommitteeParameters {
     uint256 licenseNum;//cmmitte licenseNum;
      bytes signature; //生成的数字签名用户校验
+}
+
+//用于Censor签名的结构体
+struct CensorItem {
+    address recipient;
+    uint256 licenseNum; 
+}
+struct CommitteeItem{
+    address recipient;
+    uint256 licenseNum;  
 }
 

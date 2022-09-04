@@ -25,7 +25,10 @@ interface ArbitrationInterface {
   external;
 
 /**
- 发起仲裁者结项&或者censor结项+CPO结项
+ 发起仲裁者结项&
+ 或者censor结项+
+ CPO结项达到项目deadline的时候结项
+ 仲裁没结束，超时前不允许结项
  */
 function voteForArbitration(uint256 projectId, bool ticket) external;
 
