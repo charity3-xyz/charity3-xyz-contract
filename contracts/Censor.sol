@@ -103,6 +103,21 @@ function _incrementCensorId() internal returns (uint256 newCounter) {
     }
 }
 
+//保证是censor的操作
+modifier validCensor (){
+    require(addressToCensorId[msg.sender] != 0, "msgSender should be Censor");  
+    _;
+}
 
+function validCensorAddress(address censorAddress) internal {
+    require(addressToCensorId[censorAddress] != 0, "Address is not Censor"); 
+}
+
+function getCensorId(address censorId)
+ external
+view  
+returns(uint censorId){
+  return addressToCensorId[censorId];
+}
 
 }
