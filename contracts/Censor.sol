@@ -107,10 +107,10 @@ contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
  }
 
 
-//todo: 增加判断是否能够withdraw的条件
-//todo: 判断当前余额
-//todo: 增加根据地址查询censorId
 
+/**
+ * 查询censor 节点当前的状态
+ */
 function getCensorState(uint256 censorId)
 external
 view
@@ -120,7 +120,10 @@ returns (uint)
   return uint(censor.state);
 }
 
-function canWithDraw(uint256 censorId)
+/**
+ * 查询censor节点能否提前
+ */
+function canWithdraw(uint256 censorId)
 external
 view
 returns (bool){
@@ -128,14 +131,23 @@ returns (bool){
     return (_censor.processingNum == 0) &&(_censor.state != CensorState.LOCKED); 
 }
 
-function getCensorId()
+/**
+ * 根据 censor的地址查询censorId
+ */
+
+function getCensorId(address censor)
 external
 view
 returns (uint256)
 {
-   return addressToCensorId[msg.sender]; 
+   return addressToCensorId[censor]; 
 }
 
+
+/**
+ * 根据censorId 查询censor质押的余额
+ *
+ */
 function censorDepositBanlance(uint256 censorId)
 external
 view
