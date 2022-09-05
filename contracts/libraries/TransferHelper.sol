@@ -23,4 +23,26 @@ library TransferHelper {
        require(success && data.length >= 32,"Call banlence failed");
        return abi.decode(data, (uint256));
    }
+   function allowanceOf(
+     address token,
+     address owner,
+     address spender
+   )internal view returns (uint256 balance) {
+     (bool success, bytes memory data) =
+     token.staticcall(abi.encodeWithSelector(IERC20.allowance.selector, owner,spender));
+     require(success && data.length >= 32,"Call allowance failed"); 
+     return abi.decode(data, (uint256));
+   }
+
+
+   function withhold(
+     address token, 
+     address owner,
+     address recipient,
+     uint256 amount
+   )internal {
+      (bool success, bytes memory data) = 
+     token.call(abi.encodeWithSelector(IERC20.transferFrom.selector,owner,recipient, amount)); 
+     require(success && (data.length == 0 || abi.decode(data, (bool))), "WithHold Failed");
+   }
 }

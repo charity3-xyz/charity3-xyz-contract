@@ -85,12 +85,23 @@ contract ProjectBase is ProjectParameters, Censor {
  }
 
 
-// 只有censor 打款给agent
+// censor,CPO都可以打款给agent
 function transferToAgent(uint256 projectId) 
  external
   returns (bool success){
-
+    //todo: 判断是不是CPO地址
+    //todo: 判断是否是当前的项目方地址
+    // 将当前project的募集余额打款到project中
   } 
+
+
+//todo: 获取项目所有censor的Id
+
+
+//todo: 获取项目的抵押金总额
+
+
+
 }
 
 
