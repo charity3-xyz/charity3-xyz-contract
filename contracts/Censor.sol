@@ -111,6 +111,40 @@ contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
 //todo: 判断当前余额
 //todo: 增加根据地址查询censorId
 
+function getCensorState(uint256 censorId)
+external
+view
+returns (uint) 
+{
+  Censor storage censor = idToCensor[censorId];
+  return uint(censor.state);
+}
+
+function canWithDraw(uint256 censorId)
+external
+view
+returns (bool){
+    Censor storage _censor = idToCensor[censorId];
+    return (_censor.processingNum == 0) &&(_censor.state != CensorState.LOCKED); 
+}
+
+function getCensorId()
+external
+view
+returns (uint256)
+{
+   return addressToCensorId[msg.sender]; 
+}
+
+function censorDepositBanlance(uint256 censorId)
+external
+view
+returns (uint256) 
+{
+    Censor storage censor = idToCensor[censorId];
+     return censor.depositBalance;
+
+}
 
 
 function _activeCensor(Censor storage censor) internal returns(bool isactive){
