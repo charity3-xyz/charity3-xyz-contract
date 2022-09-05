@@ -14,9 +14,11 @@ import {
     CensorInterface
 } from "./interfaces/CensorInterface.sol";
 
+
 import "./libraries/CharityConstants.sol";
 //编写censor逻辑的合约
 
+import "./CharityAsset.sol";
 
 contract Censor is CensorInterface {
     //存放id到censor的几何
