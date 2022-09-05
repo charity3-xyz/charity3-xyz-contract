@@ -13,4 +13,14 @@ library TransferHelper {
      token.call(abi.encodeWithSelector(IERC20.transfer.selector,to,value));
     require(success && (data.length == 0 || abi.decode(data, (bool))), "TransferFailed");
    }
+
+   function banlanceOf(
+    address token,
+    address target
+   )internal view returns ( uint256 balance) {
+       (bool success, bytes memory data) = 
+       token.staticcall(abi.encodeWithSelector(IERC20.balanceOf.selector, target));
+       require(success && data.length >= 32,"Call banlence failed");
+       return abi.decode(data, (uint256));
+   }
 }
