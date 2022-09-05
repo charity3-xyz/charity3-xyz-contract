@@ -19,12 +19,23 @@ import "./libraries/CharityConstants.sol";
 //编写censor逻辑的合约
 
 import "./CharityAsset.sol";
+import "./CharityAccessControl.sol";
 
-contract Censor is CensorInterface {
+contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
     //存放id到censor的几何
     mapping(uint256 => Censor) private idToCensor;
     mapping(address => uint256) private addressToCensorId;
     uint256 private _censorIdCounter = 0;
+    uint256 private _DepositLimit; //todo: 押金的额度
+
+   constructor(address ERC20TokenAddress) CharityAsset(ERC20TokenAddress){
+      paused = true;
+      ceoAddress = msg.sender;
+      cpoAddress = msg.sender;
+   } 
+
+
+
 
   function applyForCensor(CensorParameters calldata parameters)
   external
@@ -48,38 +59,47 @@ contract Censor is CensorInterface {
   }
 
 
- function activateWithDeposit(amount) external returns (bool success){
+ function activateWithDeposit(uint256 amount) 
+ external 
+ validCensor 
+  returns (bool success){
+  require(amount > _DepositLimit, "amount should reach DepositLimit" );
   uint256 censorId = addressToCensorId[msg.sender];
-  require(censorId != 0, "msgSender should be Censor");
-  Censor storage censor = idToCensor[censorId];
-  require(censor.state == CensorState.INVALIDATE,"Censor should be inActivated");
-  //todo:1. 统一判断是否有代币转账的额度
-  //todo:2. 统一调用safeTransfer的转账
-  
-
-  censor.state = CensorState.VALIDATE;
+  Censor storage _censor = idToCensor[censorId];
+  require(_censor.state == CensorState.INVALIDATE,"Censor should be inActivated");
+   _makeAllowanceFrom(_censor.censorAddress, amount); 
+  _censor.depositBalance += amount;
+  _censor.state = CensorState.VALIDATE;
   //todo: 发送质押成功事件
   success = true;
  }
 
  
-  function withdrawDeposit(uint256 amount) external 
+  function withdrawDeposit(uint256 amount) 
+  external 
+  validCensor 
   returns (bool success){
+  _setReentrancyGuard();
   uint256 censorId = addressToCensorId[msg.sender];
-  require(censorId != 0, "msgSender should be Censor");
-
-  Censor storage censor = idToCensor[censorId];
-  require((censor.processingNum == 0) &&(censor.state != CensorState.LOCKED), "Censor cannot withdraw");
-
-    success = true;
+  Censor storage _censor = idToCensor[censorId];
+  require((_censor.processingNum == 0) &&(_censor.state != CensorState.LOCKED), "Censor cannot withdraw");
+  require(_censor.depositBalance >= amount,"Deposit withDraw overflow");
+  _transferToRecipient(_censor.censorAddress, amount);
+  _censor.depositBalance -= amount;
+  if((_censor.depositBalance < _DepositLimit) && (_censor.state == CensorState.VALIDATE)){
+     _censor.state = CensorState.INVALIDATE; 
+  }
+   _clearReentrancyGuard();
+  success = true;
   }
 
 
- function addDeposit(uint256 amount) external{
+ function addDeposit(uint256 amount) 
+ external
+ validCensor
+ {
   uint256 censorId = addressToCensorId[msg.sender];
-  require(censorId != 0, "msgSender should be Censor"); 
-   //todo:1. 统一判断是否有代币转账的额度
-  //todo:2. 统一调用safeTransfer的转账
+   _makeAllowanceFrom(msg.sender, amount);
    Censor storage censor = idToCensor[censorId];
    censor.depositBalance += amount;
    //todo:event, 押金充值成功
@@ -94,7 +114,9 @@ contract Censor is CensorInterface {
 
 
 function _activeCensor(Censor storage censor) internal returns(bool isactive){
-    //todo: 判断censor的押金是否达到目标，节点是否达到激活态
+    if((censor.depositBalance > _DepositLimit) && (censor.state == CensorState.INVALIDATE)){
+      censor.state = CensorState.VALIDATE;    
+    } 
     isactive = true;
 }
 

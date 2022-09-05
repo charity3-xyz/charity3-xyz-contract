@@ -6,10 +6,13 @@ import {
 } from "./libraries/CharityStructs.sol";
 import "./libraries/CharityConstants.sol";
 
+import {
+  ReentrancyGuard  
+} from "./libraries/ReentrancyGuard.sol";
 
 
 
-contract CharityBase  {
+contract CharityBase is ReentrancyGuard {
     bytes32 internal immutable _NAME_HASH;
     bytes32 internal immutable _VERSION_HASH;
     bytes32 internal immutable _EIP_712_DOMAIN_TYPEHASH;
@@ -20,7 +23,7 @@ contract CharityBase  {
     bytes32 internal immutable _DOMAIN_SEPARATOR;
 
 
-  constructor() {
+  constructor() ReentrancyGuard() {
     (
       _NAME_HASH,
       _VERSION_HASH,

@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
+
+
+uint256 constant _NOT_ENTERED = 1;
+uint256 constant _ENTERED = 2;
+
+
+
 uint256 constant OneWord = 0x20;
 uint256 constant MaxUint8 = 0xff;
 uint256 constant MaxUint120 = 0xffffffffffffffffffffffffffffff;
@@ -57,3 +64,7 @@ uint256 constant BadContractSignature_error_signature = (
     0x4f7fb80d00000000000000000000000000000000000000000000000000000000
 );
 uint256 constant BadContractSignature_error_length = 0x04;
+
+
+
+
