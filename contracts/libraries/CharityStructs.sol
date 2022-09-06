@@ -65,6 +65,7 @@ struct DonationParameters{
  */
 struct CensorParameters {
      uint256 censorlicenseNum;//censor的
+     address recipient;
      bytes signature; //生成的数字签名用户校验
 
 }

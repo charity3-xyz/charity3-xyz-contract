@@ -18,10 +18,10 @@ import {
 import "./libraries/CharityConstants.sol";
 //编写censor逻辑的合约
 
-import "./CharityAsset.sol";
+import {CharityAsset} from "./CharityAsset.sol";
 import "./CharityAccessControl.sol";
 
-contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
+contract CensorCore is CensorInterface, CharityAsset, CharityAccessControl {
     //存放id到censor的几何
     mapping(uint256 => Censor) private idToCensor;
     mapping(address => uint256) private addressToCensorId;
@@ -39,6 +39,7 @@ contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
 
   function applyForCensor(CensorParameters calldata parameters)
   external
+  override
   returns (bool success){
     require(msg.sender == parameters.recipient, "Censor Address Consistent");
     require(addressToCensorId[parameters.recipient] == 0 ,"Censor Address repeated");
@@ -49,7 +50,7 @@ contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
         msg.sender,
         0,
         0,
-        uint256(now),
+        uint256(block.timestamp),
         CensorState.INVALIDATE
     );
     idToCensor[censorId] = _censor;
@@ -61,6 +62,7 @@ contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
 
  function activateWithDeposit(uint256 amount) 
  external 
+ override
  validCensor 
   returns (bool success){
   require(amount > _DepositLimit, "amount should reach DepositLimit" );
@@ -77,6 +79,7 @@ contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
  
   function withdrawDeposit(uint256 amount) 
   external 
+  override
   validCensor 
   returns (bool success){
   _setReentrancyGuard();
@@ -96,6 +99,7 @@ contract Censor is CensorInterface, CharityAsset, CharityAccessControl {
 
  function addDeposit(uint256 amount) 
  external
+ override
  validCensor
  {
   uint256 censorId = addressToCensorId[msg.sender];
@@ -183,11 +187,5 @@ function validCensorAddress(address censorAddress) internal {
     require(addressToCensorId[censorAddress] != 0, "Address is not Censor"); 
 }
 
-function getCensorId(address censorId)
- external
-view  
-returns(uint censorId){
-  return addressToCensorId[censorId];
-}
 
 }

@@ -25,7 +25,7 @@ enum CensorState {
     //1: 审查节点被锁定，有仲裁的情况,锁定到临时状态,资产被合约冻结，不能转账，不能提现
      LOCKED, 
     //2: 审查节点押金不足，无法再申领项目，有项目没有结项，不支持取出押金
-    INVALIDATE, 
+    INVALIDATE 
 }
 
 enum CommitteeState {
@@ -34,5 +34,5 @@ enum CommitteeState {
     //1:锁定 
      LOCKED,
      //2:超时
-     OVERDUE,
+     OVERDUE
 }

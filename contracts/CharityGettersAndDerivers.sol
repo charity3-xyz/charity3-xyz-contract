@@ -7,7 +7,7 @@ import {
     CensorParameters,
     CensorItem,
     CommitteeItem,
-    ProjectItem
+    ProjectParameters
 } from "./libraries/CharityStructs.sol";
 
 import {CharityBase} from "./CharityBase.sol";
@@ -87,14 +87,8 @@ returns (bytes32 value) {
 function _domainSeparator() internal view returns (bytes32) {
         return block.chainid == _CHAIN_ID
             ? _DOMAIN_SEPARATOR
-            : _deriveDomainSeparator(_EIP_712_DOMAIN_TYPEHASH,
-            _NAME_HASH,
-            _VERSION_HASH);
+            : _deriveDomainSeparator();
 }
 
-function _name() internal pure returns (string memory) {
-        // Return the name of the contract.
-        return _NAME;
-}
 
 }

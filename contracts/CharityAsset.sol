@@ -9,7 +9,7 @@ import {
    TransferHelper 
 } from "./libraries/TransferHelper.sol";
 
-import "./CharityGettersAndDerivers.sol";
+import {CharityGettersAndDerivers} from "./CharityGettersAndDerivers.sol";
 
 //处理
 contract CharityAsset is CharityGettersAndDerivers{
