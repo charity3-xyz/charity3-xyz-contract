@@ -17,11 +17,13 @@ import {
 
 import "./libraries/CharityConstants.sol";
 //编写censor逻辑的合约
-
+import {CensorEventsAndErrors} from "./interfaces/CensorEventsAndErrors.sol";
 import {CharityAsset} from "./CharityAsset.sol";
 import "./CharityAccessControl.sol";
 
-contract CensorCore is CensorInterface, CharityAsset, CharityAccessControl {
+
+contract CensorCore is
+ CensorInterface, CharityAsset, CharityAccessControl,CensorEventsAndErrors {
     //存放id到censor的几何
     mapping(uint256 => Censor) private idToCensor;
     mapping(address => uint256) private addressToCensorId;
@@ -55,7 +57,7 @@ contract CensorCore is CensorInterface, CharityAsset, CharityAccessControl {
     );
     idToCensor[censorId] = _censor;
     addressToCensorId[msg.sender] = censorId;
-    //todo: 发送创建成功的事件
+    emit CensorRegisterSuccess(censorId,parameters.censorlicenseNum,msg.sender);
     success = true;
   }
 
@@ -72,7 +74,7 @@ contract CensorCore is CensorInterface, CharityAsset, CharityAccessControl {
    _makeAllowanceFrom(_censor.censorAddress, amount); 
   _censor.depositBalance += amount;
   _censor.state = CensorState.VALIDATE;
-  //todo: 发送质押成功事件
+  emit CensorDepositSuccess(censorId, msg.sender,_censor.depositBalance);
   success = true;
  }
 
@@ -92,6 +94,7 @@ contract CensorCore is CensorInterface, CharityAsset, CharityAccessControl {
   if((_censor.depositBalance < _DepositLimit) && (_censor.state == CensorState.VALIDATE)){
      _censor.state = CensorState.INVALIDATE; 
   }
+   emit withDrawDepositSuccess(censorId, msg.sender,amount);
    _clearReentrancyGuard();
   success = true;
   }
@@ -106,7 +109,8 @@ contract CensorCore is CensorInterface, CharityAsset, CharityAccessControl {
    _makeAllowanceFrom(msg.sender, amount);
    Censor storage censor = idToCensor[censorId];
    censor.depositBalance += amount;
-   //todo:event, 押金充值成功
+   emit CensorAddDepositSuccess(censorId, 
+   msg.sender, amount,censor.depositBalance);
    _activeCensor(censor);
  }
 
