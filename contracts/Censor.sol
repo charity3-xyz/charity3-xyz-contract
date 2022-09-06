@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.13;
 
 import {
     ProjectState,
@@ -183,7 +183,7 @@ modifier validCensor (){
     _;
 }
 
-function validCensorAddress(address censorAddress) internal {
+function _validCensorAddress(address censorAddress) internal view {
     require(addressToCensorId[censorAddress] != 0, "Address is not Censor"); 
 }
 

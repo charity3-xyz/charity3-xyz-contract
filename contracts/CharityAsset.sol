@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.13;
 import {
     Censor,
     CensorParameters
@@ -30,12 +30,12 @@ function _makeAllowanceFrom(address sender, uint256 amount)
 }
 
 //查询charity合约所有代币的余额
-function _banlanceOfCharity() internal returns (uint256 balance) {
+function _banlanceOfCharity() internal view returns (uint256 balance) {
       balance = TransferHelper.banlanceOf(_ERC20TokenAddress, address(this));
 }
 
 //查询sender授权给Charity的余额
-function _allowanceOfSenderForCharity(address sender) internal returns(uint256 balance){
+function _allowanceOfSenderForCharity(address sender) internal  view returns(uint256 balance){
     balance = TransferHelper.allowanceOf(_ERC20TokenAddress, sender, address(this));
 } 
 

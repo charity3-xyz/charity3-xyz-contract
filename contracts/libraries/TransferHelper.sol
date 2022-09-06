@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 /// 用于ERC-20的transfer的便捷方法

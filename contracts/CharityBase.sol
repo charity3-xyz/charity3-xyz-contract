@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.13;
 import {
     Censor,
     CensorParameters
@@ -33,7 +33,7 @@ contract CharityBase is ReentrancyGuard {
       _COMMITTEE_ITEM_TYPEHASH
     ) = _deriveTypehashes();
     _CHAIN_ID = block.chainid;
-    _DOMAIN_SEPARATOR = _deriveDomainSeparator();
+     _DOMAIN_SEPARATOR = _deriveDomainSeparator();
 
 
   }
