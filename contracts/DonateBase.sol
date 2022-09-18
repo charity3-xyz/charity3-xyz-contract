@@ -19,8 +19,13 @@ import {
 import "./libraries/CharityConstants.sol";
 
 import {ProjectBase} from "./ProjectBase.sol";
-
+import {DonationEventsAndErrors} from "./interfaces/DonateEventsAndErrors.sol";
 
 contract DonationBase is DonateInterface, ProjectBase  {
 
+
+   function donating(uint256 projectId, uint256 amount)
+    external {
+
+    }
 }
