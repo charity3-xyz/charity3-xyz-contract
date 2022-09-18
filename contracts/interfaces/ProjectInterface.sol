@@ -3,7 +3,8 @@ pragma solidity ^0.8.13;
 import {
     Censor,
     CensorParameters,
-    Project
+    Project,
+    ProjectParameters
 } from "../libraries/CharityStructs.sol";
 
 interface ProjectInterface {
@@ -18,7 +19,7 @@ interface ProjectInterface {
  3. 签名验证成功创建project
  4. 创建项目默认该censor已经被认证成功
 */
- function claimProject(ProjectParameters parameters)external;
+ function claimProject(ProjectParameters calldata parameters)external;
 
 
 /**

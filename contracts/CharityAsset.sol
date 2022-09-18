@@ -44,4 +44,20 @@ function _transferToRecipient(address recipient, uint256 amount) internal {
      TransferHelper.safeTransfer(_ERC20TokenAddress,recipient , amount);
 }
 
+//获取代币的地址
+function _getTokenAddress()
+ internal 
+ view
+ returns(address)
+ {
+    return _ERC20TokenAddress;
+}
+
+function _tokenBanlanceOfAddress(address target)
+ internal
+ view
+ returns(uint256) {
+    return TransferHelper.banlanceOf(_ERC20TokenAddress, target);
+ }
+
 }

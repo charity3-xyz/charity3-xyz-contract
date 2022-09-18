@@ -71,6 +71,7 @@ contract CensorCore is
   uint256 censorId = addressToCensorId[msg.sender];
   Censor storage _censor = idToCensor[censorId];
   require(_censor.state == CensorState.INVALIDATE,"Censor should be inActivated");
+   //直接扣款，todo: 先查询授权更好
    _makeAllowanceFrom(_censor.censorAddress, amount); 
   _censor.depositBalance += amount;
   _censor.state = CensorState.VALIDATE;

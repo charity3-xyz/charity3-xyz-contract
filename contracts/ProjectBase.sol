@@ -100,7 +100,18 @@ function transferToAgent(uint256 projectId)
 
 //todo: 获取项目的抵押金总额
 
+function _increaseProjectAmount(uint256 projectId, uint256 amount)
+ internal
+{
+ Project storage donatingProject = idToProject[projectId];
+ require(donatingProject.state != ProjectState.DONATING, 
+ "Project is not on Donating");
+ //todo: 根据recuritedAmount 进行判断,是否满额度了，如果额度满了调整项目到下一个状态
+ donatingProject.recuritedAmount += amount;
+ donatingProject.balance += amount;
+ 
+}
 
 
-
+}
 
