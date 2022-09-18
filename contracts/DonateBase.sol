@@ -26,7 +26,7 @@ contract DonationBase is DonateInterface, DonationEventsAndErrors, ProjectBase  
   mapping(uint256 => Donation) private idToDonationMap;
   uint256 private _donationIdCounter = 0;
 
-
+  constructor(address ERC20TokenAddress) ProjectBase(ERC20TokenAddress){}
    function donating(uint256 projectId, uint256 amount)
     external {
         //获取账户的授权数量
@@ -56,8 +56,8 @@ contract DonationBase is DonateInterface, DonationEventsAndErrors, ProjectBase  
       }
       // 合约从sender账户中进行划转
       _makeAllowanceFrom(msg.sender, amount);
-      _increaseProjectAmount(amount);
-      unit256 serialNum = _incrementDonationSerialNum(); 
+      _increaseProjectAmount(projectId, amount);
+      uint256 serialNum = _incrementDonationSerialNum(); 
       Donation memory _donation = Donation(
         serialNum,
         projectId,

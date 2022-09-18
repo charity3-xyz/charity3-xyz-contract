@@ -32,7 +32,7 @@ import "./libraries/CharityConstants.sol";
 //todo: 需要继承审核节点，操作censor的一些方法
 contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
 //查询查询查询project的结构体
- mapping(uint256 => Project) private idToProject;
+ mapping(uint256 => Project) internal idToProject;
  // project 所有的押金，做一个记账
  //通过链下的project序列号关联生成的Id
  mapping(uint256 => uint256) private projectSerialNumToId;
