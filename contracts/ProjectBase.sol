@@ -55,10 +55,8 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
 */
     function claimProject(ProjectParameters calldata parameters)
     external validCensor {
-     //todo 1生成parameters hash, 
-     //todo 项目时间有效性的校验
-     //todo 调用validate校验
-     //todo 校验失败发送 Error 事件
+     //todo 1生成parameters hash,并且validate 
+     //todo 2. 项目抵押的amount没有校验
      uint256 projectNum = parameters.projectNum;
      if(projectSerialNumToId[projectNum] > 0){
         uint256 projectId = projectSerialNumToId[projectNum]; 
@@ -66,7 +64,27 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
         if(block.timestamp > _project.censorDeadline){
             revert CensorTimeOut(); 
         } 
-
+        //当前是可募捐状态
+        require(_project.state == ProjectState.CENSORING, "Not At CENSORING");
+        uint256 currentCensorId = getCensorId(msg.sender);
+        require(currentCensorId > 0, "censor should register");
+        require(getCensorId(currentCensorId) == uint(CensorState.VALIDATE),
+        "censor should be validation");
+        uint256 amount = parameters.depositAmount;
+        uint256 totalDepositBalance = censorDepositBanlance(currentCensorId);
+        //如果押金不足项目额度，就从账户转入一部分到押金中
+        if(totalDepositBalance < amount){
+            _addDepositToActiveCensor(currentCensorId, amount - totalDepositBalance);
+        } 
+        //扣除押金修改censor的状态
+       _deductTotalDepositToProject(currentCensorId, amount); 
+       //如果对项目还没有抵押，那么将censor增加到project的censor中
+       if(censorDespositOnProject[currentCensorId][projectId] == 0){
+          _project.censors.push(currentCensorId);
+       }
+       censorDespositOnProject[currentCensorId][projectId] += amount;
+       censorProjectValidation[currentCensorId][projectId] = parameters.validation;
+       emit BeCensorSuccess(projectId,currentCensorId);
      }else{
         // todo: 项目还没有上链，完成项目的上链
         // todo:要验证项目的签名, 签名合法则上链
@@ -114,13 +132,11 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
       //Project 信息上链
       idToProject[projectId] = _project;
       projectSerialNumToId[projectNum] = projectId;
-      censorDespositOnProject[currentCensorId][projectId] = amount;
+      censorDespositOnProject[currentCensorId][projectId] += amount;
       censorProjectValidation[currentCensorId][projectId] = parameters.validation;
-
+      emit ProjectCreateSuccess(projectNum,projectId,currentCensorId);
+      emit BeCensorSuccess(projectId,currentCensorId);
      }
-
-
-
     //  uint censorLen = parameters.otherCensors.length + 1;
     //  address[] memory censors = new address[](censorLen);
     //  censors[0] = getCensorId(msg.sender); //初始项目方
@@ -130,22 +146,6 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
     //      censors[i] = getCensorId(otherCensor);
     //      //todo: 划转项目押金的额度，采用平均分配的策略
     //  }
-    //  uint256 projectId = ++ _projectIdGen;
-    //  Project memory _project =  Project(
-    //     projectId,
-    //     parameters.fundingTarget,
-    //     0,
-    //     0,
-    //     parameters.supervisorAddress,
-    //     parameters.recipient,
-    //     ProjectState.DONATING,
-    //     censors,
-    //     uint256(censorLen),
-    //     parameters.deadline, 
-    //     0
-    //  );
-     
-    //todo event 上链成功
     }
 
 
