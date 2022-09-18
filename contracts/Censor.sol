@@ -121,7 +121,7 @@ contract CensorCore is
  * 查询censor 节点当前的状态
  */
 function getCensorState(uint256 censorId)
-external
+public 
 view
 returns (uint) 
 {
@@ -133,7 +133,7 @@ returns (uint)
  * 查询censor节点能否提前
  */
 function canWithdraw(uint256 censorId)
-external
+public 
 view
 returns (bool){
     Censor storage _censor = idToCensor[censorId];
@@ -145,7 +145,7 @@ returns (bool){
  */
 
 function getCensorId(address censor)
-external
+public 
 view
 returns (uint256)
 {
@@ -158,7 +158,7 @@ returns (uint256)
  *
  */
 function censorDepositBanlance(uint256 censorId)
-external
+public 
 view
 returns (uint256) 
 {

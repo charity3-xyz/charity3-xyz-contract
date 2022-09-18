@@ -64,7 +64,7 @@ contract DonationBase is DonateInterface, DonationEventsAndErrors, ProjectBase  
         amount
       );
       idToDonationMap[serialNum] = _donation;
-      //捐赠成功
+      //捐赠成功事件
       emit DonationComplete(msg.sender, serialNum, projectId, amount);
     }
 

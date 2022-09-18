@@ -30,6 +30,12 @@ contract ProjectBase is ProjectInterface, CensorCore {
  mapping(uint256 => uint256) private projectDeposit;
 
  uint256 private _projectIdGen = 0;
+
+
+   constructor(address ERC20TokenAddress) CensorCore(ERC20TokenAddress){
+       
+   }
+
 /*
  申领，将项目上链
  认证动作链下处理!!!!
@@ -39,7 +45,7 @@ contract ProjectBase is ProjectInterface, CensorCore {
  3. 签名验证成功创建project
  4. 创建项目默认该censor已经被认证成功
 */
-    function claimProject(ProjectParameters parameters)
+    function claimProject(ProjectParameters calldata parameters)
     external validCensor {
      //todo 1生成parameters hash
      //todo 项目时间有效性的校验
@@ -51,7 +57,7 @@ contract ProjectBase is ProjectInterface, CensorCore {
      censors[0] = getCensorId(msg.sender); //初始项目方
      for(uint i = 1; i < censorLen; i++){
         address otherCensor = parameters.otherCensors[i-1];
-         validCensorAddress(otherCensor);
+         _validCensorAddress(otherCensor);
          censors[i] = getCensorId(otherCensor);
          //todo: 划转项目押金的额度，采用平均分配的策略
      }
