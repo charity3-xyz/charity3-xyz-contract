@@ -68,8 +68,7 @@ returns (bytes32) {
         parameters.fundingTarget,
         parameters.deadline,
         parameters.recipient,
-        parameters.depositAmount,
-        keccak256(abi.encodePacked(parameters.otherCensors))
+        parameters.depositAmount
     )
    );
 }
