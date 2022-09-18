@@ -25,10 +25,10 @@ import "./CharityAccessControl.sol";
 contract CensorCore is
  CensorInterface, CharityAsset, CharityAccessControl,CensorEventsAndErrors {
     //存放id到censor的几何
-    mapping(uint256 => Censor) private idToCensor;
+    mapping(uint256 => Censor) internal idToCensor;
     mapping(address => uint256) private addressToCensorId;
     uint256 private _censorIdCounter = 0;
-    uint256 private _DepositLimit; //todo: 押金的额度
+    uint256 private _DepositLimit = 10000; //todo: 押金的额度
 
    constructor(address ERC20TokenAddress) CharityAsset(ERC20TokenAddress){
       paused = true;
