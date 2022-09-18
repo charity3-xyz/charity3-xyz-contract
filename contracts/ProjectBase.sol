@@ -17,17 +17,25 @@ import {
 } from "./interfaces/ProjectInterface.sol";
 
 import {
+ProjectEventsAndErrors
+} from "./interfaces/ProjectEventsAndErrors.sol";
+
+import {
     CensorCore
 }from "./Censor.sol";
+
+
 
 import "./libraries/CharityConstants.sol";
 
 
 //todo: 需要继承审核节点，操作censor的一些方法
-contract ProjectBase is ProjectInterface, CensorCore {
+contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
 //查询查询查询project的结构体
  mapping(uint256 => Project) private idToProject;
- mapping(uint256 => uint256) private projectDeposit;
+ // project 所有的押金，做一个记账
+ //通过链下的project序列号关联生成的Id
+ mapping(uint256 => uint256) private projectSerialNumToId;
 
  uint256 private _projectIdGen = 0;
 
@@ -47,35 +55,96 @@ contract ProjectBase is ProjectInterface, CensorCore {
 */
     function claimProject(ProjectParameters calldata parameters)
     external validCensor {
-     //todo 1生成parameters hash
+     //todo 1生成parameters hash, 
      //todo 项目时间有效性的校验
      //todo 调用validate校验
      //todo 校验失败发送 Error 事件
+     uint256 projectNum = parameters.projectNum;
+     if(projectSerialNumToId[projectNum] > 0){
+        uint256 projectId = projectSerialNumToId[projectNum]; 
+        Project storage _project = idToProject[projectId];
+        if(block.timestamp > _project.censorDeadline){
+            revert CensorTimeOut(); 
+        } 
 
-     uint censorLen = parameters.otherCensors.length + 1;
-     address[] memory censors = new address[](censorLen);
-     censors[0] = getCensorId(msg.sender); //初始项目方
-     for(uint i = 1; i < censorLen; i++){
-        address otherCensor = parameters.otherCensors[i-1];
-         _validCensorAddress(otherCensor);
-         censors[i] = getCensorId(otherCensor);
-         //todo: 划转项目押金的额度，采用平均分配的策略
-     }
-     uint256 projectId = ++ _projectIdGen;
-     Project memory _project =  Project(
+     }else{
+        // todo: 项目还没有上链，完成项目的上链
+        // todo:要验证项目的签名, 签名合法则上链
+        //审核截止日期
+        uint256 censorDeadline = parameters.censorDeadline;
+        //项目截止日期
+        uint256 dealine = parameters.deadline;
+        require(censorDeadline < dealine, 
+        "censor dealine illegal");
+        if(block.timestamp > censorDeadline){
+            // censor 超时了
+            revert CensorTimeOut();
+        }
+        uint256 currentCensorId = getCensorId(msg.sender);
+        require(currentCensorId > 0, "censor should register");
+        require(getCensorId(currentCensorId) == uint(CensorState.VALIDATE),
+        "censor should be validation");
+        //获取项目质押金
+        uint256 amount = parameters.depositAmount;
+        uint256 totalDepositBalance = censorDepositBanlance(currentCensorId);
+        //如果押金不足项目额度，就从账户转入一部分到押金中
+        if(totalDepositBalance < amount){
+            _addDepositToActiveCensor(currentCensorId, amount - totalDepositBalance);
+        } 
+        //扣除押金修改censor的状态
+       _deductTotalDepositToProject(currentCensorId, amount);
+        //将project上链
+      uint256[] memory censors = new address[]();
+      censors.push(currentCensorId);
+      uint256 projectId = _incrementProjectId();
+       Project memory _project =  Project(
         projectId,
         parameters.fundingTarget,
         0,
         0,
         parameters.supervisorAddress,
         parameters.recipient,
-        ProjectState.DONATING,
+        ProjectState.CENSORING,
         censors,
-        uint256(censorLen),
+        1,
         parameters.deadline, 
-        0
+        0,
+        parameters.censorDeadline
      );
-     idToProject[projectId] = _project;
+      //Project 信息上链
+      idToProject[projectId] = _project;
+      projectSerialNumToId[projectNum] = projectId;
+      censorDespositOnProject[currentCensorId][projectId] = amount;
+      censorProjectValidation[currentCensorId][projectId] = parameters.validation;
+
+     }
+
+
+
+    //  uint censorLen = parameters.otherCensors.length + 1;
+    //  address[] memory censors = new address[](censorLen);
+    //  censors[0] = getCensorId(msg.sender); //初始项目方
+    //  for(uint i = 1; i < censorLen; i++){
+    //     address otherCensor = parameters.otherCensors[i-1];
+    //      _validCensorAddress(otherCensor);
+    //      censors[i] = getCensorId(otherCensor);
+    //      //todo: 划转项目押金的额度，采用平均分配的策略
+    //  }
+    //  uint256 projectId = ++ _projectIdGen;
+    //  Project memory _project =  Project(
+    //     projectId,
+    //     parameters.fundingTarget,
+    //     0,
+    //     0,
+    //     parameters.supervisorAddress,
+    //     parameters.recipient,
+    //     ProjectState.DONATING,
+    //     censors,
+    //     uint256(censorLen),
+    //     parameters.deadline, 
+    //     0
+    //  );
+     
     //todo event 上链成功
     }
 
@@ -118,6 +187,12 @@ function _increaseProjectAmount(uint256 projectId, uint256 amount)
  
 }
 
+
+function _incrementProjectId() internal returns (uint256 newCounter){
+    unchecked {
+        newCounter = ++_projectIdGen; 
+    }
+}
 
 }
 

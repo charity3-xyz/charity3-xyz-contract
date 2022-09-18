@@ -24,11 +24,16 @@ import "./CharityAccessControl.sol";
 
 contract CensorCore is
  CensorInterface, CharityAsset, CharityAccessControl,CensorEventsAndErrors {
-    //存放id到censor的几何
+    //存放id到censor的集合
     mapping(uint256 => Censor) internal idToCensor;
     mapping(address => uint256) private addressToCensorId;
+    //
+    mapping(address => mapping(uint256 => uint256)) internal censorDespositOnProject;
+    //项目的validation状态 
+    mapping(address => mapping(uint256 => bool)) internal censorProjectValidation;
     uint256 private _censorIdCounter = 0;
     uint256 private _DepositLimit = 10000; //todo: 押金的额度
+    
 
    constructor(address ERC20TokenAddress) CharityAsset(ERC20TokenAddress){
       paused = true;
@@ -168,11 +173,18 @@ returns (uint256)
 }
 
 
-function _activeCensor(Censor storage censor) internal returns(bool isactive){
+function _activeCensor(Censor storage censor)
+ internal 
+ returns(bool) {
+    if(censor.state == CensorState.VALIDATE){
+     return true;
+    }
     if((censor.depositBalance > _DepositLimit) && (censor.state == CensorState.INVALIDATE)){
       censor.state = CensorState.VALIDATE;    
+      return true;
     } 
-    isactive = true;
+    return false;
+   
 }
 
 //
@@ -192,5 +204,35 @@ function _validCensorAddress(address censorAddress) internal view {
     require(addressToCensorId[censorAddress] != 0, "Address is not Censor"); 
 }
 
+function _addDepositToActiveCensor(uint256 censorId, uint256 amount)
+internal {
+   Censor storage censor = idToCensor[censorId];
+   _makeAllowanceFrom(censor.censorAddress, amount); 
+   censor.depositBalance += amount;
+
+}
+
+function _deductTotalDepositToProject(uint256 censorId, uint256 amount)
+internal {
+    Censor storage censor = idToCensor[censorId]; 
+    require(censor.state == CensorState.VALIDATE,"censor shouldValidate");
+    require(censor.depositBalance >= amount, "totalDeposit insufficent");
+    censor.depositBalance -= amount;
+    if(censor.depositBalance < _DepositLimit){
+        censor.state = CensorState.INVALIDATE;
+    }
+}
+
+function _resumeProjectDepositToCensor(uint256 censorId, uint256 amount)
+internal
+{
+   Censor storage censor = idToCensor[censorId];  
+    censor.depositBalance += amount; 
+    if(censor.state == CensorState.INVALIDATE && censor.depositBalance >= _DepositLimit){
+        censor.state = CensorState.VALIDATE;
+    }
+}
+
+//todo: 增加unlock方法
 
 }

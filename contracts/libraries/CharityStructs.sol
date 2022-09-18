@@ -32,6 +32,7 @@ struct Project {
     uint256 deadline; //项目的deadline
     uint256 numOfDonates; //项目有几笔捐赠构成
     //todo: 新增结构
+    uint256 censorDeadline; //项目审查的deadline
 }
 
 // 表示Donation的Parameters
@@ -88,10 +89,11 @@ struct ProjectParameters {
     uint256 projectNum;
     address supervisorAddress;
     uint256 fundingTarget;
-    uint256 deadline;
+    uint256 deadline; //项目募集截止日期
+    uint256 censorDeadline; //项目censor截止日期
     address recipient;
     uint256 depositAmount; //项目质押金额
-    address[] otherCensors;
+    bool validation; // 新增validation状态
     bytes signature;
 }
 
