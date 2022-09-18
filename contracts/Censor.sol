@@ -28,9 +28,9 @@ contract CensorCore is
     mapping(uint256 => Censor) internal idToCensor;
     mapping(address => uint256) private addressToCensorId;
     //
-    mapping(address => mapping(uint256 => uint256)) internal censorDespositOnProject;
+    mapping(uint256 => mapping(uint256 => uint256)) internal censorDespositOnProject;
     //项目的validation状态 
-    mapping(address => mapping(uint256 => bool)) internal censorProjectValidation;
+    mapping(uint256 => mapping(uint256 => bool)) internal censorProjectValidation;
     uint256 private _censorIdCounter = 0;
     uint256 private _DepositLimit = 10000; //todo: 押金的额度
     

@@ -68,7 +68,7 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
         require(_project.state == ProjectState.CENSORING, "Not At CENSORING");
         uint256 currentCensorId = getCensorId(msg.sender);
         require(currentCensorId > 0, "censor should register");
-        require(getCensorId(currentCensorId) == uint(CensorState.VALIDATE),
+        require(getCensorState(currentCensorId) == uint(CensorState.VALIDATE),
         "censor should be validation");
         uint256 amount = parameters.depositAmount;
         uint256 totalDepositBalance = censorDepositBanlance(currentCensorId);
@@ -81,6 +81,7 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
        //如果对项目还没有抵押，那么将censor增加到project的censor中
        if(censorDespositOnProject[currentCensorId][projectId] == 0){
           _project.censors.push(currentCensorId);
+          _project.totalCensors++; //增加censor节点
        }
        censorDespositOnProject[currentCensorId][projectId] += amount;
        censorProjectValidation[currentCensorId][projectId] = parameters.validation;
@@ -100,7 +101,7 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
         }
         uint256 currentCensorId = getCensorId(msg.sender);
         require(currentCensorId > 0, "censor should register");
-        require(getCensorId(currentCensorId) == uint(CensorState.VALIDATE),
+        require(getCensorState(currentCensorId) == uint(CensorState.VALIDATE),
         "censor should be validation");
         //获取项目质押金
         uint256 amount = parameters.depositAmount;
@@ -112,8 +113,8 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
         //扣除押金修改censor的状态
        _deductTotalDepositToProject(currentCensorId, amount);
         //将project上链
-      uint256[] memory censors = new address[]();
-      censors.push(currentCensorId);
+      uint256[] memory censors = new uint256[](1);
+      censors[0] = currentCensorId;
       uint256 projectId = _incrementProjectId();
        Project memory _project =  Project(
         projectId,
