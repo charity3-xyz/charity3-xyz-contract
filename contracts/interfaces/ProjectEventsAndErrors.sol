@@ -22,7 +22,7 @@ event BeCensorSuccess(
 // 不能再成为节点了
 error CensorTimeOut();
 
-
+error StillOnCensoring();
 
 
 

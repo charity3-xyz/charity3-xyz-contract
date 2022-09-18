@@ -151,6 +151,87 @@ contract ProjectBase is ProjectInterface, ProjectEventsAndErrors, CensorCore {
 
 
 /**
+ 1. 将project扭转到可捐赠状态
+ */
+function turnProjectToDonating(uint256 projectNum)
+ external {
+   uint256 projectId = projectSerialNumToId[projectNum]; 
+   require(projectId > 0,"Invalidate Project");
+
+   Project storage _project = idToProject[projectId]; 
+   require(_project.state == ProjectState.CENSORING, "Project should be on Censor");
+   uint256 censorDeadline = _project.censorDeadline; 
+   //还没有到达时间
+   if(block.timestamp < censorDeadline){
+    revert StillOnCensoring();
+   }
+   require((msg.sender == _project.supervisorAddress)||
+   (msg.sender == cpoAddress),
+   "caller illegal");
+   uint256 projectDeadline = _project.deadline; 
+   if(block.timestamp <= projectDeadline){
+    //判断各个节点认证的状态,判断项目是否可以进行的条件
+    if(_projectIsReady(projectId)){
+        _project.state = ProjectState.DONATING;
+    }else{
+        _sendCensorDepositBack(projectId);
+       _project.state == ProjectState.CANCEL; 
+    }
+   }else {
+     _sendCensorDepositBack(projectId);
+    _project.state == ProjectState.CANCEL;
+   }
+   
+}
+
+
+function _sendCensorDepositBack(uint256 projectId)
+ internal
+{
+    Project storage _project = idToProject[projectId];  
+     uint256[] memory censors = _project.censors;
+     for(uint i = 0; i < censors.length; i++){
+         uint256 censorId = _project.censors[i];
+         uint256 depositAmount = censorDespositOnProject[censorId][projectId];
+         censorDespositOnProject[censorId][projectId] = 0;
+         _resumeProjectDepositToCensor( censorId, depositAmount);
+     }
+
+}
+
+
+function _needAdmin(uint256 projectId)
+ internal 
+ view {
+     Project storage _project = idToProject[projectId]; 
+     require((msg.sender == _project.supervisorAddress)||
+   (msg.sender == cpoAddress),
+   "Need Admin Call ");
+
+}
+
+
+
+function _projectIsReady(uint256 projectId) 
+internal
+view
+returns(bool)
+ {
+    Project storage _project = idToProject[projectId];  
+    uint256 proNum = 0;
+    uint256 conNum = 0;
+    for(uint256 i = 0; i < _project.totalCensors;i++){
+        uint256 censorId = _project.censors[i];
+       if( censorProjectValidation[censorId][projectId] == true){
+         ++ proNum; 
+       } else{
+         ++ conNum;
+       }
+    }
+    return (proNum > conNum);
+}
+
+/**
  1. censor 才有验证的权利，
  2. 验证后，censor就加入了项目censor的数组中了
  3. 一个censor 能否在确认期修改自己的validation结果？

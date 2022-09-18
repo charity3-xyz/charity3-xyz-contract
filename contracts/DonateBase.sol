@@ -31,7 +31,6 @@ contract DonationBase is DonateInterface, DonationEventsAndErrors, ProjectBase  
     external {
         //获取账户的授权数量
       uint256 allowanceOfSender =  _allowanceOfSenderForCharity(msg.sender); 
-      
       if(amount > allowanceOfSender){
         // Revert 是因为代币授权额度不够
         revert DonatorInsufficientApprove(
